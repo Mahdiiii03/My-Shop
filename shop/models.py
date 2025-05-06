@@ -40,7 +40,7 @@ class Product(models.Model):
     price = models.DecimalField(max_digits=8, decimal_places=2)
     category = models.ForeignKey(Category, on_delete=models.CASCADE, related_name='products', default=1)
     description = models.TextField(max_length=300, null=True, blank=True)
-    image = models.ImageField(upload_to='products/', null=True, blank=True)
+    image = models.ImageField(upload_to='staticfiles/media/products/', null=True, blank=True)
     sale = models.BooleanField(default=False)
     sale_price = models.DecimalField(default=0, max_digits=8, decimal_places=2)
 
