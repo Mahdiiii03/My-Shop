@@ -1,0 +1,14 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>پرداخت تستی زرین‌پال</title>
+</head>
+<body>
+    <h2>فرم پرداخت تستی</h2>
+    <form method="post">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <button type="submit">پرداخت</button>
+    </form>
+</body>
+</html>

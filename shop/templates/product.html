@@ -1,0 +1,106 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+    <br><br><br><br>
+    <center>
+        <div class="card mb-3" style="max-width: 1000px;">
+            <div class="row g-0">
+                <div class="col-md-4">
+                    {% if product.image %}
+                        <img src="{{ product.image.url }}" class="img-fluid rounded-start" alt="...">
+                    {% else %}
+                        <img src="{% static 'sample-image/noImage.webp' %} " class="img-fluid rounded-start">
+                    {% endif %}
+
+                </div>
+                <div class="col-md-8">
+                    <div class="card-body">
+
+                        {% if product.sale %}
+                            <div class="d-flex justify-content-center small text-warning mb-2">
+                                <div class="bi-star-fill"></div>
+                                &nbsp;&nbsp;Sale!&nbsp;&nbsp;
+                                <div class="bi-star-fill"></div>
+                            </div>
+                            <h5 class="card-title">{{ product.name }}</h5>
+                            <p class="card-text">{{ product.description }}</p>
+                            <!-- Product price-->
+                            <strike>
+                                ${{ product.price }}
+                            </strike>
+                            &nbsp;
+                            ${{ product.sale_price }}
+
+                        {% else %}
+                            <h5 class="card-title">{{ product.name }}</h5>
+                            <p class="card-text">{{ product.description }}</p>
+                            ${{ product.price }}
+                        {% endif %}
+                    <br>
+                    <br>
+                        <div class="row justify-content-center">
+                            <div class="col-md-2">Quantity:</div>
+                            <div class="col-md-2">
+                                <select class="form-select form-select-sm" id="qty-cart">
+
+
+
+
+                                    <option value="1">1</option>
+                                    <option value="2">2</option>
+                                    <option value="3">3</option>
+                                    <option value="4">4</option>
+                                    <option value="5">5</option>
+                                </select>
+                            </div>
+                        </div>
+
+
+
+                </div>
+                <br><br>
+                        <a href="{% url 'home' %}" class="btn btn-primary">back</a>
+                        <button value="{{ product.id }}" type="button" class="btn btn-secondary" id="add-cart">Add To
+                            Cart
+                        </button>
+                    </div>
+            </div>
+
+
+        </div>
+    </center>
+
+
+
+
+    <script>
+        $(document).on('click', '#add-cart', function (e) {
+            e.preventDefault();
+            $.ajax({
+                type: 'POST',
+                url: '{% url "cart_add" %}',
+                data: {
+                    product_id: $('#add-cart').val(),
+                    product_qty: $('#qty-cart option:selected').text(),
+                    csrfmiddlewaretoken: '{{ csrf_token }}',
+                    action: 'post'
+                },
+                success: function (json) {
+
+                    document.getElementById('cart-number').textContent = json.cart_number
+
+                },
+                error: function (xhr, errmsg, err) {
+                    console.error(errmsg);
+                }
+            });
+        });
+    </script>
+{% endblock %}
+{% block footer %}
+    <br><br><br><br>
+<footer class="py-5 bg-dark">
+    <div class="container"><p class="m-0 text-center text-white">footer shop</p></div>
+</footer>
+{% endblock%}

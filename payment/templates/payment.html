@@ -1,0 +1,130 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+    <header class="bg-dark py-5">
+        <div class="container px-4 px-lg-5 my-5">
+            <div class="text-center text-white">
+                <h1 class="display-4 fw-bolder">Check Out</h1>
+                <p class="lead fw-normal text-white-50 mb-0">See Your Orders And Billing Infos ...</p>
+            </div>
+        </div>
+    </header>
+
+    <br/>
+    <br/>
+    <br/>
+    <br/>
+    <br/>
+
+    <div style="margin-left :450px" class="container">
+        <div class="row">
+
+
+            <div class="row">
+
+                <div class="col-6">
+
+                    <div class="card">
+                        <div class="card-header">
+                            Your Cart
+                        </div>
+
+                        <div class="card-body">
+
+                            {% for product in products %}
+                                {% if product.is_sale %}
+                                    {{ product.name }} / ${{ product.sale_price }}
+                                {% else %}
+                                    {{ product.name }} / ${{ product.price }}
+
+                                {% endif %}
+                                <br/>
+                                <small>
+                                    numbers :
+                                    {% for key,value in orders.items %}
+                                        {% if key == product.id|slugify %}
+                                            {{ value }}
+                                        {% endif %}
+                                    {% endfor %}
+                                </small><br/><br/>
+                            {% endfor %}
+                            <strong>Total : ${{ total }}</strong>
+                            <br/>
+                            <br/>
+
+                            <a href="{% url 'cart_summery' %}" class="btn btn-outline-info">Edit Items</a>
+                        </div>
+
+                    </div>
+
+
+                    <br/>
+
+
+                    <div class="card">
+                        <div class="card-header">
+                            Shipping Info
+                        </div>
+
+                        <div class="card-body">
+
+                            fullname : {{ shipping_add.shipping_fullname }}<br/>
+                            phone number : {{ shipping_add.shipping_address1 }}<br/>
+                            address1 : {{ shipping_add.shipping_address2 }}<br/>
+                            address2 : {{ shipping_add.shipping_fullname }}<br/>
+                            city : {{ shipping_add.shipping_city }}<br/>
+                            state : {{ shipping_add.shipping_state }}<br/>
+                            country : {{ shipping_add.shipping_country }}<br/>
+
+<br/>
+
+
+
+                            <a href="{% url 'change_prof' %}" class="btn btn-outline-info">Edit Info</a>
+
+
+                        </div>
+
+                    </div>
+
+
+
+                <br/>
+                <br/>
+
+                <div class="card">
+                        <div class="card-header">
+                            Billing Info
+                        </div>
+
+
+                        <div class="card-body">
+ <form method="POST" action = "{% url 'pay' %}">
+     {% csrf_token %}
+                            {{payment_form.as_p}}
+
+<br/>
+                            <button type = "submit" class="btn btn-success">Pay Now</button>
+                </form>
+                        </div>
+
+                    </div>
+                <br/>
+                <br/>
+
+
+                </div>
+            </div>
+
+
+        </div>
+    </div>
+
+    <br/>
+    <br/>
+    <br/>
+    <br/>
+
+
+{% endblock %}

@@ -1,0 +1,166 @@
+{% extends 'base.html' %}
+{% load static %}
+<!-- Section-->
+
+
+{% block header %}
+    <header class="bg-dark py-5">
+        <div class="container px-4 px-lg-5 my-5">
+            <div class="text-center text-white">
+
+
+                <h1 class="display-4 fw-bolder">Shopping Cart</h1>
+                <p class="lead fw-normal text-white-50 mb-0">yo yo yo</p>
+
+            </div>
+        </div>
+    </header>
+{% endblock %}
+{% block search %}
+    <form method ="POST" class="d-flex" role="search" action="{% url 'search_cart' %}">
+    {% csrf_token %}
+        <input class="form-control me-2" type="search" placeholder="Search" aria-label="Search" name="search_cart">
+        <button class="btn btn-outline-success" type="submit">Search</button>
+    </form>
+{% endblock %}
+
+{% block content %}
+    <br><br>
+    {% for product in products %}
+        <br><br>
+        <center>
+
+            <div class="card mb-3" style="max-width: 900px;">
+                <div class="row g-0">
+                    <div class="col-md-4">
+                        {% if product.image %}
+                            <img src="{{ product.image.url }}" class="img-fluid rounded-start" alt="...">
+                        {% else %}
+                            <img src="{% static 'sample-image/noImage.webp' %} " class="img-fluid rounded-start">
+                        {% endif %}
+                    </div>
+                    <div class="col-md-8">
+                        <div class="card-body">
+                            <h5 class="card-title">{{ product.name }}</h5>
+                            <p class="card-text">{{ product.description }}</p>
+
+                            {% if product.sale %}
+                                <strike>
+                                    ${{ product.price }}
+                                </strike>
+                                &nbsp;
+                                ${{ product.sale_price }}
+                            {% else %}
+                                ${{ product.price }}
+                            {% endif %}
+                            <br><br>
+                            <div class="row justify-content-center">
+                                <div class="col-md-2">Quantity:</div>
+                                <div class="col-md-2">
+                                    <select class="form-select form-select-sm" id="select{{ product.id }}">
+
+                                        <option selected>
+                                            {% for key,value in quantity.items %}
+                                                {% if key == product.id|slugify %}
+                                                    {{ value }}
+                                                {% endif %}
+                                            {% endfor %}
+
+
+                                        </option>
+
+
+                                        <option value="1">1</option>
+                                        <option value="2">2</option>
+                                        <option value="3">3</option>
+                                        <option value="4">4</option>
+                                        <option value="5">5</option>
+                                    </select>
+                                </div>
+                            </div>
+
+                        </div>
+                        <br>
+
+
+                        <button data-index="{{ product.id }}" type="button" class="btn btn-secondary update_btn">
+                            Update
+                        </button>
+                        <button data-index="{{ product.id }}" type="button" class="btn btn-danger delete_btn">Delete
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </center>
+
+
+
+    {% endfor %}
+    <br>
+
+    <center>
+        <h2>
+            <strong>
+                Total : ${{ total }}
+            </strong>
+            <a class = "btn btn-success" href = "{% url 'checkout' %}"> Checkout</a>
+
+        </h2>
+
+    </center>
+
+    <br><br><br>
+    <script>
+        $(document).on('click', '.update_btn', function (e) {
+            e.preventDefault();
+            var product_id = $(this).data('index');
+            $.ajax({
+                type: 'POST',
+                url: '{% url "cart_update" %}',
+                data: {
+                    product_id: $(this).data('index'),
+                    product_qty: $('#select' + product_id + ' option:selected ').val(),
+                    csrfmiddlewaretoken: '{{ csrf_token }}',
+                    action: 'post'
+                },
+                success: function (json) {
+
+                    location.reload()
+
+                },
+                error: function (xhr, errmsg, err) {
+                    console.error(errmsg);
+                }
+            });
+        });
+    </script>
+
+    <script>
+        $(document).on('click', '.delete_btn', function (e) {
+            e.preventDefault();
+
+            $.ajax({
+                type: 'POST',
+                url: '{% url "cart_delete" %}',
+                data: {
+                    product_id: $(this).data('index'),
+                    csrfmiddlewaretoken: '{{ csrf_token }}',
+                    action: 'post'
+                },
+                success: function (json) {
+
+                    location.reload()
+
+                },
+                error: function (xhr, errmsg, err) {
+                    console.error(errmsg);
+                }
+            });
+        });
+    </script>
+{% endblock %}
+{% block footer %}
+    <footer class="py-5 bg-dark">
+        <div class="container"><p class="m-0 text-center text-white">footer shop</p></div>
+    </footer>
+{% endblock %}
